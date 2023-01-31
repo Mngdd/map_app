@@ -4,16 +4,18 @@ from io import BytesIO
 import requests
 from PIL import Image, ImageQt
 from PyQt5.QtGui import QPixmap
-from PyQt5.QtWidgets import QApplication, QWidget, QLabel
+from PyQt5 import uic
+from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QMainWindow
 
 SCREEN_SIZE = [600, 450]
 
 
-class Example(QWidget):
+class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
+        uic.loadUi('main_window.ui', self)
+
         self.getImage()
-        self.initUI()
 
     def getImage(self):
         map_request = "http://static-maps.yandex.ru/1.x/?ll=37.530887,55.703118&spn=0.002,0.002&l=map"
@@ -26,20 +28,11 @@ class Example(QWidget):
             sys.exit(1)
 
         self.img = ImageQt.ImageQt(Image.open(BytesIO(response.content)))
-
-    def initUI(self):
-        self.setGeometry(100, 100, *SCREEN_SIZE)
-        self.setWindowTitle('Отображение карты')
-
-        ## Изображение
-        self.image = QLabel(self)
-        self.image.move(0, 0)
-        self.image.resize(600, 450)
-        self.image.setPixmap(QPixmap.fromImage(self.img))
+        self.label.setPixmap(QPixmap.fromImage(self.img))
 
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
-    ex = Example()
+    ex = MainWindow()
     ex.show()
     sys.exit(app.exec())
