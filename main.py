@@ -22,6 +22,12 @@ class MainWindow(QMainWindow):
 
         self.getImage()
         self.search_btn.clicked.connect(self.search)
+        self.sbros_btn.clicked.connect(self.sbros)
+
+    def sbros(self):
+        if len(self.points) >= 1:
+            self.points.pop(-1)
+        self.getImage()
 
     def search(self):
         print(self.ll)
