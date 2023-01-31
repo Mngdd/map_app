@@ -18,7 +18,11 @@
     <item>
      <layout class="QVBoxLayout" name="verticalLayout">
       <item>
-       <widget class="QLineEdit" name="coord_edit"/>
+       <widget class="QLineEdit" name="coord_edit">
+        <property name="focusPolicy">
+         <enum>Qt::ClickFocus</enum>
+        </property>
+       </widget>
       </item>
       <item>
        <widget class="QLabel" name="map">
@@ -60,6 +64,9 @@
       </item>
       <item>
        <widget class="QPushButton" name="sputnik_btn">
+        <property name="focusPolicy">
+         <enum>Qt::ClickFocus</enum>
+        </property>
         <property name="text">
          <string>спутник</string>
         </property>
@@ -67,6 +74,9 @@
       </item>
       <item>
        <widget class="QPushButton" name="gibrid_btn">
+        <property name="focusPolicy">
+         <enum>Qt::ClickFocus</enum>
+        </property>
         <property name="text">
          <string>гибрид</string>
         </property>
@@ -87,6 +97,9 @@
       </item>
       <item>
        <widget class="QPushButton" name="search_btn">
+        <property name="focusPolicy">
+         <enum>Qt::ClickFocus</enum>
+        </property>
         <property name="text">
          <string>искать</string>
         </property>
@@ -94,6 +107,9 @@
       </item>
       <item>
        <widget class="QPushButton" name="sbros_btn">
+        <property name="focusPolicy">
+         <enum>Qt::ClickFocus</enum>
+        </property>
         <property name="text">
          <string>сброс</string>
         </property>
