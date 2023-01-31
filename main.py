@@ -15,10 +15,22 @@ class MainWindow(QMainWindow):
         super().__init__()
         uic.loadUi('main_window.ui', self)
 
+        self.l = 'map'
+
         self.getImage()
 
+        self.sheme_btn.clicked.connect(self.set_l('map'))
+        self.sputnik_btn.clicked.connect(self.set_l('sat'))
+        self.sputnik_btn.clicked.connect(self.set_l('sat,skl'))
+
+    def set_l(self, l: str):
+        def inner():
+            self.l = l
+            self.getImage()
+        return inner
+
     def getImage(self):
-        map_request = "http://static-maps.yandex.ru/1.x/?ll=37.530887,55.703118&spn=0.002,0.002&l=map"
+        map_request = f"http://static-maps.yandex.ru/1.x/?ll=37.530887,55.703118&spn=0.002,0.002&l={self.l}"
         response = requests.get(map_request)
 
         if not response:
