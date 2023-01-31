@@ -16,7 +16,7 @@ class MainWindow(QMainWindow):
         super().__init__()
         uic.loadUi('main_window.ui', self)
 
-        self.params = {'spn': 1, 'l': 'map'}
+        self.params = {'ll': '37.530887,55.703118', 'z': 1, 'l': 'map'}
         self.getImage()
 
         self.sheme_btn.clicked.connect(self.set_l('map'))
@@ -27,21 +27,21 @@ class MainWindow(QMainWindow):
 
     def keyPressEvent(self, event):
         if event.key() == Qt.Key_PageDown:
-            self.params['spn'] -= 0.25
-            if self.params['spn'] == 0:
-                self.params['spn'] = 0
-            self.getImage()
-        elif event.key() == Qt.Key_PageUp:
-            self.params['spn'] += 0.25
-            self.getImage()
-        elif event.key() == Qt.UpArrow:
-            ...
-        elif event.key() == Qt.DownArrow:
-            ...
-        elif event.key() == Qt.LeftArrow:
-            ...
-        elif event.key() == Qt.RightArrow:
-            ...
+            self.params['z'] = self.params['z'] - 2 if self.params['z'] - 2 >= 0 else 0
+        if event.key() == Qt.Key_PageUp:
+            self.params['z'] = self.params['z'] + 2 if self.params['z'] + 2 <= 17 else 17
+        if event.key() == Qt.Key_Left:
+            self.move_ll(x=-0.5)
+        if event.key() == Qt.Key_Up:
+            self.move_ll(y=0.5)
+        if event.key() == Qt.Key_Down:
+            self.move_ll(y=-0.5)
+        if event.key() == Qt.Key_Right:
+            self.move_ll(x=0.5)
+        self.getImage()
+
+    def move_ll(self, x=0.0, y=0.0):
+        self.params['ll'] = f"{float(self.params['ll'].split(',')[0]) + x},{float(self.params['ll'].split(',')[1]) +y}"
 
     def set_l(self, l_: str):
         def inner():
@@ -51,11 +51,8 @@ class MainWindow(QMainWindow):
         return inner
 
     def getImage(self):
-        print('GET', self.params['spn'])
-        self.params['spn'] = round(self.params['spn'], 3)
-        map_request = f"http://static-maps.yandex.ru/1.x/?ll=37.530887,55.703118&spn=" \
-                      f"{self.params['spn']},{self.params['spn']}&l={self.params['l']}"
-        response = requests.get(map_request)
+        map_request = f"http://static-maps.yandex.ru/1.x/"
+        response = requests.get(map_request, params=self.params)
 
         if not response:
             print("Ошибка выполнения запроса:")
