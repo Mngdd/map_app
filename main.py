@@ -4,6 +4,7 @@ from io import BytesIO
 import requests
 from PIL import Image, ImageQt
 from PyQt5.QtGui import QPixmap
+from PyQt5.QtCore import Qt
 from PyQt5 import uic
 from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QMainWindow
 
@@ -15,7 +16,55 @@ class MainWindow(QMainWindow):
         super().__init__()
         uic.loadUi('main_window.ui', self)
 
+        self.params = {'spn': 1, 'l': 'map'}
         self.getImage()
+
+        self.sheme_btn.clicked.connect(self.set_l('map'))
+        self.sputnik_btn.clicked.connect(self.set_l('sat'))
+        self.sputnik_btn.clicked.connect(self.set_l('sat,skl'))
+
+        self.getImage()
+
+    def keyPressEvent(self, event):
+        if event.key() == Qt.Key_PageDown:
+            self.params['spn'] -= 0.25
+            if self.params['spn'] == 0:
+                self.params['spn'] = 0
+            self.getImage()
+        elif event.key() == Qt.Key_PageUp:
+            self.params['spn'] += 0.25
+            self.getImage()
+        elif event.key() == Qt.UpArrow:
+            ...
+        elif event.key() == Qt.DownArrow:
+            ...
+        elif event.key() == Qt.LeftArrow:
+            ...
+        elif event.key() == Qt.RightArrow:
+            ...
+
+    def set_l(self, l_: str):
+        def inner():
+            self.params['l'] = l_
+            self.getImage()
+
+        return inner
+
+    def getImage(self):
+        print('GET', self.params['spn'])
+        self.params['spn'] = round(self.params['spn'], 3)
+        map_request = f"http://static-maps.yandex.ru/1.x/?ll=37.530887,55.703118&spn=" \
+                      f"{self.params['spn']},{self.params['spn']}&l={self.params['l']}"
+        response = requests.get(map_request)
+
+        if not response:
+            print("Ошибка выполнения запроса:")
+            print(map_request)
+            print("Http статус:", response.status_code, "(", response.reason, ")")
+            sys.exit(1)
+
+        self.img = ImageQt.ImageQt(Image.open(BytesIO(response.content)))
+        self.label.setPixmap(QPixmap.fromImage(self.img))
 
     def find(self, address: str, search_for: str = False, spn: str = False):
         cords = self.get_pos(address)
@@ -40,19 +89,6 @@ class MainWindow(QMainWindow):
         data = json_response["response"]["GeoObjectCollection"]["featureMember"][0]["GeoObject"]
         cords = list(map(float, data['Point']['pos'].split()))
         return cords
-
-    def getImage(self):
-        map_request = "http://static-maps.yandex.ru/1.x/?ll=37.530887,55.703118&spn=0.002,0.002&l=map"
-        response = requests.get(map_request)
-
-        if not response:
-            print("Ошибка выполнения запроса:")
-            print(map_request)
-            print("Http статус:", response.status_code, "(", response.reason, ")")
-            sys.exit(1)
-
-        self.img = ImageQt.ImageQt(Image.open(BytesIO(response.content)))
-        self.label.setPixmap(QPixmap.fromImage(self.img))
 
 
 if __name__ == '__main__':
