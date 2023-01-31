@@ -5,16 +5,28 @@ import requests
 from PIL import Image, ImageQt
 from PyQt5.QtGui import QPixmap
 from PyQt5 import uic
-from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QMainWindow
+from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QMainWindow, QLineEdit
 
 SCREEN_SIZE = [600, 450]
 
 
 class MainWindow(QMainWindow):
+    coord_edit: QLineEdit
+
     def __init__(self):
         super().__init__()
         uic.loadUi('main_window.ui', self)
+        self.ll = [37.530887, 55.703118]
+        self.z = 16
+        self.points = []
 
+        self.getImage()
+        self.search_btn.clicked.connect(self.search)
+
+    def search(self):
+        print(self.ll)
+        self.ll = self.get_pos(self.coord_edit.text())
+        self.points.append(tuple(self.ll))
         self.getImage()
 
     def find(self, address: str, search_for: str = False, spn: str = False):
@@ -42,7 +54,8 @@ class MainWindow(QMainWindow):
         return cords
 
     def getImage(self):
-        map_request = "http://static-maps.yandex.ru/1.x/?ll=37.530887,55.703118&spn=0.002,0.002&l=map"
+        pt = '~'.join(','.join(map(str, point)) for point in self.points)
+        map_request = f"http://static-maps.yandex.ru/1.x/?ll={','.join(map(str, self.ll))}&l=map&z={self.z}&pt={pt}"
         response = requests.get(map_request)
 
         if not response:
@@ -52,10 +65,11 @@ class MainWindow(QMainWindow):
             sys.exit(1)
 
         self.img = ImageQt.ImageQt(Image.open(BytesIO(response.content)))
-        self.label.setPixmap(QPixmap.fromImage(self.img))
+        self.map.setPixmap(QPixmap.fromImage(self.img))
 
 
 if __name__ == '__main__':
+    print(','.join(map(str, [37.530887, 55.703118])))
     api_key = '40d1649f-0493-4b70-98ba-98533de7710b'
     app = QApplication(sys.argv)
     ex = MainWindow()
