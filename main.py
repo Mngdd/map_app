@@ -15,13 +15,12 @@ class MainWindow(QMainWindow):
     coord_edit: QLineEdit
     result_coord_lbl: QLabel
 
-    def __init__(self):
+    def __init__(self):  # FIXME стрелки влево вправо
         super().__init__()
         uic.loadUi('main_window.ui', self)
         self.ll = [37.530887, 55.703118]
         self.z = 16
         self.points = []
-
         self.l = 'map'
 
         self.params = {'ll': '37.530887,55.703118', 'z': 1, 'l': 'map'}
@@ -31,19 +30,8 @@ class MainWindow(QMainWindow):
         self.sputnik_btn.clicked.connect(self.set_l('sat'))
         self.sputnik_btn.clicked.connect(self.set_l('sat,skl'))
 
-        self.getImage()
         self.search_btn.clicked.connect(self.search)
         self.sbros_btn.clicked.connect(self.sbros)
-
-        self.sheme_btn.clicked.connect(self.set_l('map'))
-        self.sputnik_btn.clicked.connect(self.set_l('sat'))
-        self.sputnik_btn.clicked.connect(self.set_l('sat,skl'))
-
-    def set_l(self, l: str):
-        def inner():
-            self.l = l
-            self.getImage()
-        return inner
 
     def sbros(self):
         if len(self.points) >= 1:
@@ -53,9 +41,9 @@ class MainWindow(QMainWindow):
 
     def keyPressEvent(self, event):
         if event.key() == Qt.Key_PageDown:
-            self.params['z'] = self.params['z'] - 2 if self.params['z'] - 2 >= 0 else 0
+            self.z = self.z - 2 if self.z - 2 >= 0 else 0
         if event.key() == Qt.Key_PageUp:
-            self.params['z'] = self.params['z'] + 2 if self.params['z'] + 2 <= 17 else 17
+            self.z = self.z + 2 if self.z + 2 <= 17 else 17
         if event.key() == Qt.Key_Left:
             self.move_ll(x=-0.5)
         if event.key() == Qt.Key_Up:
@@ -67,41 +55,16 @@ class MainWindow(QMainWindow):
         self.getImage()
 
     def move_ll(self, x=0.0, y=0.0):
-        self.params['ll'] = f"{float(self.params['ll'].split(',')[0]) + x},{float(self.params['ll'].split(',')[1]) +y}"
+        self.ll[0] += x
+        self.ll[1] += y
 
     def set_l(self, l_: str):
         def inner():
-            self.params['l'] = l_
+            self.l = l_
             self.getImage()
 
         return inner
 
-    def getImage(self):
-        map_request = f"http://static-maps.yandex.ru/1.x/"
-        response = requests.get(map_request, params=self.params)
-
-        if not response:
-            print("Ошибка выполнения запроса:")
-            print(map_request)
-            print("Http статус:", response.status_code, "(", response.reason, ")")
-            sys.exit(1)
-
-        self.img = ImageQt.ImageQt(Image.open(BytesIO(response.content)))
-        self.label.setPixmap(QPixmap.fromImage(self.img))
-
-    def find(self, address: str, search_for: str = False, spn: str = False):
-        cords = self.get_pos(address)
-        map_params = {'l': 'sat', 'll': f"{cords[0]},{cords[1]}"}
-                      # 'pt': '~'.join([el + ',pm2blm1' for el in [pharmacy, ','.join(map(str, cords))]])}
-        if spn:
-            map_params['spn'] = spn
-        map_request = "http://static-maps.yandex.ru/1.x/"
-        map_response = requests.get(map_request, params=map_params)
-        if map_response:
-            return map_response
-        else:
-            print("Ошибка выполнения запроса:")
-            print("Http статус:", map_response.status_code, "(", map_response.reason, ")")
     def search(self):
         print(self.ll)
         address = self.coord_edit.text()
@@ -116,12 +79,6 @@ class MainWindow(QMainWindow):
         self.sheme_btn.clicked.connect(self.set_l('map'))
         self.sputnik_btn.clicked.connect(self.set_l('sat'))
         self.sputnik_btn.clicked.connect(self.set_l('sat,skl'))
-
-    def set_l(self, l: str):
-        def inner():
-            self.l = l
-            self.getImage()
-        return inner
 
     def get_pos(self, address):
         geocoder_request = "http://geocode-maps.yandex.ru/1.x/"
