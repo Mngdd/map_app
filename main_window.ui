@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>962</width>
-    <height>620</height>
+    <width>890</width>
+    <height>643</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -40,6 +40,13 @@
         </property>
        </spacer>
       </item>
+      <item>
+       <widget class="QLabel" name="result_coord_lbl">
+        <property name="text">
+         <string>TextLabel</string>
+        </property>
+       </widget>
+      </item>
      </layout>
     </item>
     <item>
@@ -66,13 +73,6 @@
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="search_btn">
-        <property name="text">
-         <string>искать</string>
-        </property>
-       </widget>
-      </item>
-      <item>
        <spacer name="verticalSpacer_2">
         <property name="orientation">
          <enum>Qt::Vertical</enum>
@@ -85,6 +85,20 @@
         </property>
        </spacer>
       </item>
+      <item>
+       <widget class="QPushButton" name="search_btn">
+        <property name="text">
+         <string>искать</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="sbros_btn">
+        <property name="text">
+         <string>сброс</string>
+        </property>
+       </widget>
+      </item>
      </layout>
     </item>
    </layout>
@@ -94,7 +108,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>962</width>
+     <width>890</width>
      <height>34</height>
     </rect>
    </property>
