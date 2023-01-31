@@ -27,6 +27,16 @@ class MainWindow(QMainWindow):
         self.search_btn.clicked.connect(self.search)
         self.sbros_btn.clicked.connect(self.sbros)
 
+        self.sheme_btn.clicked.connect(self.set_l('map'))
+        self.sputnik_btn.clicked.connect(self.set_l('sat'))
+        self.sputnik_btn.clicked.connect(self.set_l('sat,skl'))
+
+    def set_l(self, l: str):
+        def inner():
+            self.l = l
+            self.getImage()
+        return inner
+
     def sbros(self):
         if len(self.points) >= 1:
             self.points.pop(-1)
