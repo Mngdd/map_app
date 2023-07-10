@@ -1,2 +1,1 @@
-# megasuperkartainator30000
-мегасуперкартаинатор30000
+# map app qt
